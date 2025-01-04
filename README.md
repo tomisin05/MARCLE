@@ -1,14 +1,15 @@
-# M.A.R.C.(LE): A Wordle-Inspired Word Guessing Game with AI-Powered Guess Rating
+# M.A.R.C.(LE): A Wordle-Inspired Word Guessing Game with Advanced Guess Rating
 
-M.A.R.C.(LE) is an advanced word guessing game inspired by Wordle, featuring AI-powered guess rating and customizable difficulty levels. This Next.js application combines the classic word puzzle gameplay with innovative features to enhance the player experience.
+M.A.R.C.(LE) is an advanced word guessing game inspired by Wordle, featuring a sophisticated algorithmic guess rating system and customizable difficulty levels. This Next.js application combines the classic word puzzle gameplay with innovative features to enhance the player experience.
 
 The game challenges players to guess a hidden word within a limited number of attempts. What sets M.A.R.C.(LE) apart is its intelligent guess rating system, which provides feedback on the quality of each guess, helping players improve their strategy as they play.
 
 Key features include:
-- AI-powered guess rating system
+- Advanced algorithmic guess rating system
+- Adaptive rating strategy based on game phase (early, mid, late game)
 - Customizable difficulty levels (easy, medium, hard, impossible)
 - Responsive design for both desktop and mobile devices
-- Real-time feedback on guess quality
+- Real-time feedback on guess quality with color-coded responses
 - Integration with Supabase for data persistence
 - State management using MobX
 
@@ -92,7 +93,7 @@ Steps:
 
 2. Rating a guess:
    - Input: User submits the guess "HELLO"
-   - Output: AI rates the guess and provides feedback (e.g., "YELLOW" for a good guess)
+   - Output: System rates the guess based on the current game phase and provides color-coded feedback
 
 ### Integration Patterns
 
