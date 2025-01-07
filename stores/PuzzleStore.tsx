@@ -383,7 +383,7 @@ class PuzzleStore {
 
       console.log('Response status:', response.status)
       const data = await response.json()
-      console.log('Response data:', data)
+      console.log('Response data:', data) 
 
       if (response.ok && data.colors) {
         this.lastGuessColors = data.colors
