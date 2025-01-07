@@ -390,7 +390,7 @@ class PuzzleStore {
         console.log('Fetched colors:', data.colors)
 
 
-        // Save colors to Supabase
+        // Save colors to Supabase 
         try {
         const { error } = await supabase
           .from('guess_colors')
