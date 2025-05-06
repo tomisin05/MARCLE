@@ -4,12 +4,17 @@ import { useEffect, useState, useRef } from 'react'
 import Guess, { GameGrid } from '../components/Guess'
 import Querty from '../components/Qwerty'
 import PuzzleStore, { Difficulty } from '../stores/PuzzleStore'
-import DifficultySelector, { DifficultyProps } from '../components/DifficultySelector'
+import DifficultySelector from '../components/DifficultySelector'
 import { toJS } from 'mobx'
+import dynamic from 'next/dynamic'
+
+// Import react-confetti dynamically to avoid SSR issues
+const ReactConfetti = dynamic(() => import('react-confetti'), { ssr: false })
 
 export default observer(function Home() {
   const [gameStarted, setGameStarted] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
+  const [confettiRecycle, setConfettiRecycle] = useState(true);
   const [theme, setTheme] = useState<'default' | 'dark' | 'fun'>('fun');
   const confettiRef = useRef<HTMLDivElement>(null);
   const store = PuzzleStore;
@@ -50,11 +55,43 @@ export default observer(function Home() {
     };
   }, []);
 
+  // Window size state for confetti
+  const [windowSize, setWindowSize] = useState({
+    width: typeof window !== 'undefined' ? window.innerWidth : 0,
+    height: typeof window !== 'undefined' ? window.innerHeight : 0,
+  });
+
+  // Update window size for confetti
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
+
+    window.addEventListener('resize', handleResize);
+    handleResize();
+    
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   // Check for win/loss and trigger celebration
   useEffect(() => {
     if (store.won) {
+      // Start with recycling on for initial burst
+      setConfettiRecycle(true);
       setShowCelebration(true);
-      setTimeout(() => setShowCelebration(false), 3000);
+      
+      // After 2 seconds, stop recycling so confetti can fall and disappear
+      setTimeout(() => {
+        setConfettiRecycle(false);
+      }, 2000);
+      
+      // After 5 seconds, hide the confetti component completely
+      setTimeout(() => {
+        setShowCelebration(false);
+      }, 7000);
     }
   }, [store.won]);
 
@@ -177,34 +214,29 @@ export default observer(function Home() {
                 You won! 🎉
               </h1>
               
-              {/* Confetti container */}
-              <div ref={confettiRef} className="fixed inset-0 pointer-events-none">
-                {showCelebration && Array.from({ length: 100 }).map((_, i) => {
-                  const size = Math.random() * 10 + 5;
-                  const color = [
+              {/* React Confetti for realistic celebration */}
+              {showCelebration && (
+                <ReactConfetti
+                  width={windowSize.width}
+                  height={windowSize.height}
+                  recycle={confettiRecycle}
+                  numberOfPieces={500}
+                  gravity={0.25}
+                  friction={0.99}
+                  initialVelocityX={{ min: -15, max: 15 }}
+                  initialVelocityY={{ min: -5, max: 25 }}
+                  wind={0.01}
+                  colors={[
                     '#FF5252', '#FF4081', '#E040FB', '#7C4DFF', 
                     '#536DFE', '#448AFF', '#40C4FF', '#18FFFF', 
                     '#64FFDA', '#69F0AE', '#B2FF59', '#EEFF41', 
                     '#FFFF00', '#FFD740', '#FFAB40', '#FF6E40'
-                  ][Math.floor(Math.random() * 16)];
+                  ]}
+                  tweenDuration={5000}
                   
-                  return (
-                    <div
-                      key={i}
-                      className="absolute confetti"
-                      style={{
-                        left: `${Math.random() * 100}%`,
-                        top: `${Math.random() * 30}%`,
-                        backgroundColor: color,
-                        width: `${size}px`,
-                        height: `${size}px`,
-                        transform: `rotate(${Math.random() * 360}deg)`,
-                        animation: `fall ${Math.random() * 3 + 2}s linear forwards`
-                      }}
-                    />
-                  );
-                })}
-              </div>
+                  run={true}
+                />
+              )}
             </div>
           )}
           
