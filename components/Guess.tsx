@@ -1,151 +1,5 @@
-// import { observer } from 'mobx-react-lite'
-
-// interface GuessProps {
-//   isGuessed: boolean;
-//   guess?: string;
-//   word: string;
-//   rating?: string;
-//   score?: number;
-// }
-
-
-// export default observer(function Guess({ isGuessed, guess = '', word, rating, score }: GuessProps) {
-//   // Deep debugging of component props and state
-//   console.log('Guess component rendering with:', {
-//     isGuessed,
-//     guess,
-//     word,
-//     rating,
-//     score,
-//     guessLength: guess?.length,
-//     guessChars: Array.from(guess || '').join(',')
-//   });
-  
-//   // Create a padded array to ensure we always show 6 cells
-//   const displayChars = Array(6).fill('').map((_, i) => guess?.[i] || '');
-  
-//   return (
-//     <div>
-//     <div className="mb-2 grid grid-cols-6 gap-1 sm:gap-2">
-//       {new Array(6).fill(0).map((_, i) => {
-//         const bgColor = !isGuessed
-//           ? 'bg-black'
-//           : guess[i] === word[i]
-//           ? 'bg-green-400'
-//           : word.includes(guess[i])
-//           ? 'bg-yellow-400'
-//           : 'bg-black'
-
-//         return (
-//           <div
-//             key={`grid-cell-${i}`}
-//             className={`flex h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 items-center justify-center border border-gray-400 font-bold text-2xl uppercase ${bgColor} ${bgColor === 'bg-black' ? 'text-white' : 'text-black'}`}
-//           >
-//             {displayChars[i]}
-//           </div>
-//         )
-        
-//       })}
-//     </div>
-
-//     {isGuessed && rating && (
-//         <div className={`mt-1 text-sm ${getRatingColor(rating)}`}>
-//           Guess Rating: {rating} ({score?.toFixed(1)})
-//         </div>
-//       )}
-//     </div>
-//   )
-// })
-
-
-
-
-
-// // components/Guess.tsx
-// import { observer } from 'mobx-react-lite';
-
-// interface GuessProps {
-//   isGuessed: boolean;
-//   guess?: string;
-//   word: string;
-//   rating?: string;
-//   score?: number;
-// }
-
-// // Helper function to get the appropriate color class based on rating
-// function getRatingColor(rating: string): string {
-//   switch (rating.toUpperCase()) {
-//     case 'GREEN':
-//       return 'text-green-500';
-//     case 'YELLOW':
-//       return 'text-yellow-500';
-//     case 'ORANGE':
-//       return 'text-orange-500';
-//     case 'RED':
-//       return 'text-red-500';
-//     default:
-//       return 'text-gray-500';
-//   }
-// }
-
-// export default observer(function Guess({ 
-//   isGuessed, 
-//   guess = '', 
-//   word, 
-//   rating, 
-//   score 
-// }: GuessProps) {
-//   // Deep debugging of component props and state
-//   console.log('Guess component rendering with:', {
-//     isGuessed,
-//     guess,
-//     word,
-//     rating,
-//     score,
-//     guessLength: guess?.length,
-//     guessChars: Array.from(guess || '').join(',')
-//   });
-  
-//   // Create a padded array to ensure we always show 6 cells
-//   const displayChars = Array(6).fill('').map((_, i) => guess?.[i] || '');
-  
-//   return (
-//     <div>
-//       <div className="mb-2 grid grid-cols-6 gap-1 sm:gap-2">
-//         {new Array(6).fill(0).map((_, i) => {
-//           const bgColor = !isGuessed
-//             ? 'bg-black'
-//             : guess[i] === word[i]
-//             ? 'bg-green-400'
-//             : word.includes(guess[i])
-//             ? 'bg-yellow-400'
-//             : 'bg-black';
-
-//           return (
-//             <div
-//               key={`grid-cell-${i}`}
-//               className={`flex h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 items-center justify-center border border-gray-400 font-bold text-2xl uppercase ${bgColor} ${bgColor === 'bg-black' ? 'text-white' : 'text-black'}`}
-//             >
-//               {displayChars[i]}
-//             </div>
-//           );
-//         })}
-//       </div>
-
-//       {isGuessed && rating && (
-//         <div className={`mt-1 text-sm ${getRatingColor(rating)}`}>
-//           Guess Rating: {rating} ({score?.toFixed(1)})
-//         </div>
-//       )}
-//     </div>
-//   );
-// });
-
-
-
-// components/Guess.tsx
 import { observer } from 'mobx-react-lite';
-import PuzzleStore from '../stores/PuzzleStore'
+import PuzzleStore from '../stores/PuzzleStore';
 
 const store = PuzzleStore;
 
@@ -160,19 +14,19 @@ interface GuessProps {
 function getRatingColor(rating: string): string {
   switch (rating?.toUpperCase()) {
     case 'GREEN':
-      return 'bg-green-500';
+      return 'bg-gradient-to-br from-green-400 to-green-600';
     case 'YELLOW':
-      return 'bg-yellow-500';
+      return 'bg-gradient-to-br from-yellow-300 to-yellow-500';
     case 'ORANGE':
-      return 'bg-orange-500';
+      return 'bg-gradient-to-br from-orange-300 to-orange-500';
     case 'RED':
-      return 'bg-red-500';
+      return 'bg-gradient-to-br from-red-400 to-red-600';
     default:
-      return 'bg-gray-500';
+      return 'bg-gradient-to-br from-gray-400 to-gray-600';
   }
 }
 
-// New component for the ratings column
+// New component for the ratings column without animations or emojis
 interface RatingsColumnProps {
   ratings: (string | undefined)[];
   scores: (number | undefined)[];
@@ -180,65 +34,31 @@ interface RatingsColumnProps {
 }
 
 function RatingsColumn({ ratings, scores, currentGuess }: RatingsColumnProps) {
+  // Check if the game is over (lost or won) to disable animations
+  const isGameOver = currentGuess >= store.maxGuesses || (currentGuess > 0 && store.guesses[currentGuess - 1] === store.word);
+
   return (
-    <div className="ml-8 grid grid-rows-6 gap-2 sm:gap-3 md:gap-4">
+    <div className="ml-4 sm:ml-6 md:ml-8 grid grid-rows-6 gap-2 sm:gap-3 md:gap-4">
       {Array(store.maxGuesses).fill(0).map((_, i) => (
         <div
           key={`rating-${i}`}
-          className={`flex h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 items-center justify-center`}
+          className="flex h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 items-center justify-center"
         >
           {i < currentGuess && ratings[i] && (
             <div 
-              className={`h-full w-full rounded-full ${getRatingColor(ratings[i]!)} border-2 border-gray-400`}
+              className={`h-full w-full rounded-full ${getRatingColor(ratings[i]!)} border-2 border-gray-300 shadow-lg flex items-center justify-center`}
               title={`Rating: ${ratings[i]} (${scores[i]?.toFixed(1)})`}
-            />
+              // No transitions or animations when game is over
+              style={{ transition: isGameOver ? 'none' : undefined }}
+            >
+              <>   </>
+            </div>
           )}
-
-            {/* Score Display */}
-            {/* {i < currentGuess && scores[i] && (
-              <div className="text-white font-mono text-lg sm:text-xl md:text-2xl">
-                {scores[i]?.toFixed(1)}
-              </div>
-            )} */}
         </div>
       ))}
     </div>
   );
 }
-
-
-
-// function RatingsColumn({ ratings, scores, currentGuess }: RatingsColumnProps) {
-//     return (
-//       <div className="ml-8 grid grid-rows-6 gap-1 sm:gap-2">
-//         {Array(6).fill(0).map((_, i) => (
-//           <div
-//             key={`rating-${i}`}
-//             className="flex items-center gap-2" // Added flex container for circle and score
-//           >
-//             <div
-//               className={`flex h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 items-center justify-center`}
-//             >
-//               {i < currentGuess && ratings[i] && (
-//                 <div 
-//                   className={`h-full w-full rounded-full ${getRatingColor(ratings[i]!)} border-2 border-gray-400`}
-//                   title={`Rating: ${ratings[i]}`}
-//                 />
-//               )}
-//             </div>
-//             {/* Score display */}
-//             {i < currentGuess && scores[i] && (
-//               <div className="text-white font-mono text-lg sm:text-xl md:text-2xl">
-//                 {scores[i]?.toFixed(1)}
-//               </div>
-//             )}
-//           </div>
-//         ))}
-//       </div>
-//     );
-//   }
-  
-  
 
 // Main game component
 interface GameGridProps {
@@ -250,6 +70,9 @@ interface GameGridProps {
 }
 
 export function GameGrid({ guesses, currentGuess, word, ratings, scores }: GameGridProps) {
+  // Check if the game is over (lost) to disable animations globally
+  const isGameOver = currentGuess >= store.maxGuesses || guesses[currentGuess - 1] === word;
+  
   return (
     <div className="flex items-start">
       <div className="grid grid-rows-6 gap-3 sm:gap-4">
@@ -258,18 +81,58 @@ export function GameGrid({ guesses, currentGuess, word, ratings, scores }: GameG
             {Array(6).fill(0).map((_, col) => {
               const guess = guesses[row] || '';
               const isGuessed = row < currentGuess;
-              const bgColor = !isGuessed
-                ? 'bg-black'
-                : guess[col] === word[col]
-                ? 'bg-green-400'
-                : word.includes(guess[col])
-                ? 'bg-yellow-400'
-                : 'bg-black';
+              
+              // Handle duplicate letters properly
+              let bgColor = 'bg-gray-800';
+              let textColor = 'text-white';
+              
+              if (isGuessed) {
+                // First, mark exact matches (green)
+                if (guess[col] === word[col]) {
+                  bgColor = 'bg-gradient-to-br from-green-400 to-green-600';
+                  textColor = 'text-white';
+                } else {
+                  // For non-exact matches, check if it's a yellow
+                  // Count occurrences of this letter in the word
+                  const letterCount = word.split('').filter(c => c === guess[col]).length;
+                  
+                  if (letterCount > 0) {
+                    // Count how many of this letter are exact matches
+                    const exactMatches = guess.split('').filter((c, i) => c === guess[col] && c === word[i]).length;
+                    
+                    // Count how many yellows we've already assigned for this letter
+                    // (letters before the current position)
+                    let yellowsAssigned = 0;
+                    for (let i = 0; i < col; i++) {
+                      if (guess[i] === guess[col] && guess[i] !== word[i] && 
+                          word.includes(guess[i])) {
+                        yellowsAssigned++;
+                      }
+                    }
+                    
+                    // If we haven't exceeded the count in the target word, mark as yellow
+                    if (exactMatches + yellowsAssigned < letterCount) {
+                      bgColor = 'bg-gradient-to-br from-yellow-300 to-yellow-500';
+                      textColor = 'text-gray-900';
+                    }
+                  }
+                }
+              }
+
+              // Check if the game is over (lost) to disable animations
+              const isGameOver = currentGuess >= store.maxGuesses;
+              
+              // Simple styling without animations or transforms
+              const cellStyle = isGuessed 
+                ? `${bgColor} ${textColor} shadow-md` 
+                : `${bgColor} ${textColor} shadow-inner`;
 
               return (
                 <div
                   key={`cell-${row}-${col}`}
-                  className={`flex h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 items-center justify-center border border-gray-400 font-bold text-2xl uppercase ${bgColor} ${bgColor === 'bg-black' ? 'text-white' : 'text-black'}`}
+                  className={`flex h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 items-center justify-center 
+                    border-2 border-gray-600 rounded-md font-bold text-2xl uppercase ${cellStyle}`}
+                  style={{ transition: isGameOver ? 'none' : undefined }}
                 >
                   {guess[col] || ''}
                 </div>
@@ -283,7 +146,6 @@ export function GameGrid({ guesses, currentGuess, word, ratings, scores }: GameG
         ratings={ratings}
         scores={scores}
         currentGuess={currentGuess}
-        // className="ml-8"
       />
     </div>
   );

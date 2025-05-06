@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react-lite'
 import { reaction } from 'mobx'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import Guess, { GameGrid } from '../components/Guess'
 import Querty from '../components/Qwerty'
 import PuzzleStore, { Difficulty } from '../stores/PuzzleStore'
@@ -9,9 +9,11 @@ import { toJS } from 'mobx'
 
 export default observer(function Home() {
   const [gameStarted, setGameStarted] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [theme, setTheme] = useState<'default' | 'dark' | 'fun'>('fun');
+  const confettiRef = useRef<HTMLDivElement>(null);
   const store = PuzzleStore;
-  console.log('Current store state:', { guesses: store.guesses, currentGuess: store.currentGuess });
-
+  
   useEffect(() => {
     store.init();
     
@@ -28,7 +30,6 @@ export default observer(function Home() {
       store.handleKeyup(e);
     };
     window.addEventListener('keyup', handleKeyup);
-    console.log('Home component mounted. Initial store state:', { word: store.word, currentGuess: store.currentGuess, guesses: store.guesses });
 
     // Add touch event listeners for mobile devices
     const handleTouchMove = (e: TouchEvent) => {
@@ -45,8 +46,17 @@ export default observer(function Home() {
     return () => {
       window.removeEventListener('keyup', handleKeyup);
       window.removeEventListener('touchmove', handleTouchMove);
+      disposer();
     };
   }, []);
+
+  // Check for win/loss and trigger celebration
+  useEffect(() => {
+    if (store.won) {
+      setShowCelebration(true);
+      setTimeout(() => setShowCelebration(false), 3000);
+    }
+  }, [store.won]);
 
   const startGame = (difficulty: Difficulty) => {
     store.setDifficulty(difficulty);
@@ -69,56 +79,79 @@ export default observer(function Home() {
     startGame(PuzzleStore.difficulty);
   };
 
+  // Generate random stars for the background
+  const generateStars = () => {
+    const stars = [];
+    for (let i = 0; i < 50; i++) {
+      const size = Math.random() * 3 + 1;
+      stars.push({
+        id: i,
+        top: `${Math.random() * 100}%`,
+        left: `${Math.random() * 100}%`,
+        size: `${size}px`,
+        opacity: Math.random() * 0.8 + 0.2,
+        animationDelay: `${Math.random() * 5}s`
+      });
+    }
+    return stars;
+  };
+
+  const stars = generateStars();
+
   return (
     <>
       {!gameStarted ? (
         <DifficultySelector onDifficultySet={handleDifficultyChange} />
       ) : (
-        <div className="flex min-h-screen w-full flex-col items-center justify-between bg-gray-600 overflow-y-auto mobile-friendly-container space-y-4 px-2 sm:px-4">
-          <h1 className="bg-gradient-to-br from-blue-400 to-green-400 bg-clip-text text-3xl sm:text-4xl md:text-6xl font-bold uppercase text-transparent mb-4 mt-4">
+        <div className="game-background flex min-h-screen w-full flex-col items-center justify-between overflow-y-auto mobile-friendly-container space-y-4 px-2 sm:px-4 relative">
+          {/* Animated background elements */}
+          {stars.map(star => (
+            <div
+              key={star.id}
+              className="absolute rounded-full bg-white "
+              style={{
+                top: star.top,
+                left: star.left,
+                width: star.size,
+                height: star.size,
+                opacity: star.opacity,
+                animationDelay: star.animationDelay
+              }}
+            />
+          ))}
+          
+          {/* Game title with animation */}
+          <h1 className="game-title bg-gradient-to-br from-purple-400 via-blue-400 to-green-400 bg-clip-text text-3xl sm:text-4xl md:text-6xl font-bold uppercase text-transparent mb-4 mt-4 animate-float">
             M.A.R.C.(LE)
           </h1>
-          <div className="text-white mb-4 text-center">
-            <h2 className="mb-2 mobile-friendly-text">Current Difficulty: {store.difficulty}</h2>
-            <p className="mobile-friendly-text">Max Guesses: {store.maxGuesses}</p>
-            <button onClick={changeDifficulty} className="mt-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          
+          {/* Game info section */}
+          <div className="text-white mb-4 text-center backdrop-blur-sm bg-black/30 p-4 rounded-lg">
+            <h2 className="mb-2 mobile-friendly-text font-bold">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-red-500">
+                Difficulty: {store.difficulty}
+              </span>
+            </h2>
+            <p className="mobile-friendly-text">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-purple-500">
+                Max Guesses: {store.maxGuesses}
+              </span>
+            </p>
+            <button 
+              onClick={changeDifficulty} 
+              className="mt-4 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold py-2 px-6 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg"
+            >
               Change Difficulty
             </button>
           </div>
 
-          {/* <div className="mb-4 w-full max-w-xs sm:max-w-sm md:max-w-md">
-            {Array.from({ length: store.maxGuesses }).map((_, i) => {
-              const guess = store.guesses[i] || '';
-              console.log(`Rendering guess ${i}:`, guess); // Debug log
-              return (
-                <GameGrid
-                guesses={store.guesses}
-                currentGuess={store.currentGuess}
-                word={store.word}
-                ratings={store.lastGuessRating}
-                scores={store.lastGuessScore}
-                />
-              );
-            })}
-          </div> */}
-
-            <div className="mb-4 w-full max-w-xs sm:max-w-sm md:max-w-md">
+          {/* Game grid */}
+          <div className={`mb-4 w-full max-w-xs sm:max-w-sm md:max-w-md backdrop-blur-sm bg-black/20 p-4 rounded-lg ${store.lost || store.won ? 'game-over' : ''}`}>
             <GameGrid
               guesses={store.guesses}
               currentGuess={store.currentGuess}
               word={store.word}
-            //   ratings={store.guessRatings}
-            //   scores={store.guessScores}
-
-            
-            //   ratings={store.guesses.map((_, index) => 
-            //     index < store.currentGuess ? store.lastGuessRating : undefined
-            //   )}
-            //   scores={store.guesses.map((_, index) => 
-            //     index < store.currentGuess ? store.lastGuessScore : undefined
-            //   )}
-
-            ratings={store.guesses.map((_, index) => 
+              ratings={store.guesses.map((_, index) => 
                 // For completed guesses, use stored ratings
                 index < store.currentGuess - 1 ? store.guessRatings[index] :
                 // For current guess, use lastGuessRating
@@ -137,18 +170,67 @@ export default observer(function Home() {
             />
           </div>
 
-
-          {store.won && <h1 className="text-green-400 text-2xl mb-4">You won!</h1>}
-          {store.lost && <h1 className="text-red-400 text-2xl mb-4">You lost! The word was: {store.word}</h1>}
-          {(store.won || store.lost) && (
-            <button onClick={changeDifficulty} className="mb-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm sm:text-base">Play Again</button>
+          {/* Win/Loss messages with animations */}
+          {store.won && (
+            <div className="text-center animate-celebrate">
+              <h1 className="text-4xl font-bold mb-4 animate-glow text-transparent bg-clip-text bg-gradient-to-r from-green-300 to-blue-500">
+                You won! 🎉
+              </h1>
+              
+              {/* Confetti container */}
+              <div ref={confettiRef} className="fixed inset-0 pointer-events-none">
+                {showCelebration && Array.from({ length: 100 }).map((_, i) => {
+                  const size = Math.random() * 10 + 5;
+                  const color = [
+                    '#FF5252', '#FF4081', '#E040FB', '#7C4DFF', 
+                    '#536DFE', '#448AFF', '#40C4FF', '#18FFFF', 
+                    '#64FFDA', '#69F0AE', '#B2FF59', '#EEFF41', 
+                    '#FFFF00', '#FFD740', '#FFAB40', '#FF6E40'
+                  ][Math.floor(Math.random() * 16)];
+                  
+                  return (
+                    <div
+                      key={i}
+                      className="absolute confetti"
+                      style={{
+                        left: `${Math.random() * 100}%`,
+                        top: `${Math.random() * 30}%`,
+                        backgroundColor: color,
+                        width: `${size}px`,
+                        height: `${size}px`,
+                        transform: `rotate(${Math.random() * 360}deg)`,
+                        animation: `fall ${Math.random() * 3 + 2}s linear forwards`
+                      }}
+                    />
+                  );
+                })}
+              </div>
+            </div>
           )}
-          <p className="text-white mb-4 text-center mobile-friendly-text">Tap or click the letters below to make your guess. Use 'Enter' to submit and 'Backspace' to delete.</p>
+          
+          {store.lost && (
+            <h1 className="text-red-400 text-2xl mb-4 ">
+              You lost! The word was: <span className="font-bold">{store.word}</span>
+            </h1>
+          )}
+          
+          {(store.won || store.lost) && (
+            <button 
+              onClick={changeDifficulty} 
+              className="mb-4 px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-full hover:from-indigo-600 hover:to-purple-700 text-sm sm:text-base font-bold transition-all duration-300 transform hover:scale-105 shadow-lg"
+            >
+              Play Again
+            </button>
+          )}
+          
+          <p className="text-white mb-4 text-center mobile-friendly-text backdrop-blur-sm bg-black/30 p-3 rounded-lg">
+            Tap or click the letters below to make your guess. Use 'Enter' to submit and '⌫' to delete.
+          </p>
+          
+          {/* Keyboard */}
           <Querty store={store} />
         </div>
       )}
     </>
   );
 });
-
-

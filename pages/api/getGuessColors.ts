@@ -43,16 +43,32 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
         });
       }
       
-      // Calculate colors for each letter
-      const colors = guessToCheck.split('').map((letter, index) => {
-        if (letter === word[index]) {
-          return 'bg-green-400';
-        } else if (word.includes(letter)) {
-          return 'bg-yellow-400';
-        } else {
-          return 'bg-black';
+      // Calculate colors for each letter with proper handling of duplicate letters
+      const colors = Array(guessToCheck.length).fill('bg-black');
+      const wordLetterCount = {};
+      
+      // Count letters in the target word
+      for (const letter of word) {
+        wordLetterCount[letter] = (wordLetterCount[letter] || 0) + 1;
+      }
+      
+      // First pass: Mark green matches and decrement available counts
+      for (let i = 0; i < guessToCheck.length; i++) {
+        const letter = guessToCheck[i];
+        if (letter === word[i]) {
+          colors[i] = 'bg-green-400';
+          wordLetterCount[letter]--;
         }
-      });
+      }
+      
+      // Second pass: Mark yellow matches if there are remaining instances of the letter
+      for (let i = 0; i < guessToCheck.length; i++) {
+        const letter = guessToCheck[i];
+        if (colors[i] !== 'bg-green-400' && wordLetterCount[letter] > 0) {
+          colors[i] = 'bg-yellow-400';
+          wordLetterCount[letter]--;
+        }
+      }
       
       return res.status(200).json({ colors, mostRecentGuessColors: colors });
     } catch (error) {
