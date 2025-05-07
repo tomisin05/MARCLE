@@ -49,7 +49,7 @@ export default function Tutorial({ onClose }: TutorialProps) {
             <span><strong>Yellow</strong>: The letter is in the word but in the wrong position</span>
           </div>
           <div>
-            <span className="inline-block w-6 h-6 bg-gray-800 mr-2"></span>
+            <span className="inline-block w-6 h-6 bg-gray-700 mr-2"></span>
             <span><strong>Gray</strong>: The letter is not in the word</span>
           </div>
         </div>
