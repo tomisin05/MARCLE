@@ -91,7 +91,7 @@ export default function Tutorial({ onClose }: TutorialProps) {
             <li>Include common consonants (R, S, T, L, N, D)</li>
             <li>Avoid repeating letters to maximize information</li>
           </ul>
-          <p>Example: "STARED" is a good first guess with 3 vowels and 3 common consonants.</p>
+          <p>Example: "EDITOR" is a good first guess with 3 vowels and 3 common consonants.</p>
         </div>
       ),
       image: "/EarlyGameStrategy.png"
