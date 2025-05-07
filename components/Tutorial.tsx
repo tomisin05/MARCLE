@@ -23,18 +23,18 @@ export default function Tutorial({ onClose }: TutorialProps) {
           <p>Click "Next" to continue or "Skip" to exit the tutorial at any time.</p>
         </div>
       ),
-      image: "https://via.placeholder.com/400x200?text=Welcome"
+      image: "/Welcome.png"
     },
     {
       title: "Basic Gameplay",
       content: (
         <div>
-          <p className="mb-2">The goal is to guess a 6-letter word in limited attempts.</p>
+          <p className="mb-2">The goal is to guess a 6-letter MARC-Related word in limited attempts.</p>
           <p className="mb-2">Type your guess using the keyboard at the bottom of the screen and press Enter to submit.</p>
           <p>The number of attempts you get depends on your chosen difficulty level.</p>
         </div>
       ),
-      image: "https://via.placeholder.com/400x200?text=Gameplay"
+      image: "/BasicGameplay.png"
     },
     {
       title: "Color Feedback",
@@ -54,7 +54,7 @@ export default function Tutorial({ onClose }: TutorialProps) {
           </div>
         </div>
       ),
-      image: "https://via.placeholder.com/400x200?text=Color+Feedback"
+      image: "/ColorFeedback.png"
     },
     {
       title: "Rating System",
@@ -79,7 +79,7 @@ export default function Tutorial({ onClose }: TutorialProps) {
           </div>
         </div>
       ),
-      image: "https://via.placeholder.com/400x200?text=Rating+System"
+      image: "/RatingSystem.png"
     },
     {
       title: "Early Game Strategy (Guesses 1-2)",
@@ -94,7 +94,7 @@ export default function Tutorial({ onClose }: TutorialProps) {
           <p>Example: "STARED" is a good first guess with 3 vowels and 3 common consonants.</p>
         </div>
       ),
-      image: "https://via.placeholder.com/400x200?text=Early+Game"
+      image: "/EarlyGameStrategy.png"
     },
     {
       title: "Mid Game Strategy (Guesses 3-4)",
@@ -109,7 +109,7 @@ export default function Tutorial({ onClose }: TutorialProps) {
           <p>Your rating will improve if you effectively use the information from previous guesses.</p>
         </div>
       ),
-      image: "https://via.placeholder.com/400x200?text=Mid+Game"
+      image: "/MidGameStrategy.png"
     },
     {
       title: "Late Game Strategy (Guesses 5+)",
@@ -124,7 +124,7 @@ export default function Tutorial({ onClose }: TutorialProps) {
           <p>The highest ratings go to guesses that make the best use of all available information.</p>
         </div>
       ),
-      image: "https://via.placeholder.com/400x200?text=Late+Game"
+      image: "/LateGameStrategy.png"
     },
     {
       title: "You're Ready to Play!",
@@ -135,7 +135,7 @@ export default function Tutorial({ onClose }: TutorialProps) {
           <p>Good luck and have fun!</p>
         </div>
       ),
-      image: "https://via.placeholder.com/400x200?text=Ready+to+Play"
+      image: "/ReadyToPlay.png"
     }
   ];
 
