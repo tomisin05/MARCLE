@@ -106,44 +106,6 @@ export default function DifficultySelector({ onDifficultySet }: DifficultyProps)
         <p className="text-white mb-4">
           Test your word-guessing skills with different difficulty levels!
         </p>
-        <button 
-          onClick={() => setShowInfo(!showInfo)}
-          className="text-sm text-blue-300 hover:text-blue-200 underline"
-        >
-          {showInfo ? 'Hide Info' : 'How to Play'}
-        </button>
-        
-
-        {showInfo && (
-        <div className="mt-4 text-left text-gray-200 text-sm border-t border-gray-600 pt-4">
-            <p className="mb-2">• Guess the 5-letter word in limited attempts</p>
-            <p className="mb-2">• Green tiles mean the letter is correct and in the right position</p>
-            <p className="mb-2">• Yellow tiles mean the letter is in the word but in the wrong position</p>
-            <p className="mb-2">• Gray tiles mean the letter is not in the word</p>
-            <p className="mb-2">• Choose your difficulty level to adjust the number of guesses you get</p>
-            
-            <div className="mt-4 border-t border-gray-600 pt-4">
-            <p className="font-bold mb-2">How Guesses Are Rated:</p>
-            <p className="mb-2">Each guess receives a score and rating based on its strategic value:</p>
-            
-            <p className="mb-1"><span className="font-bold text-green-400">Early Game (Guesses 1-2):</span></p>
-            <p className="mb-2 pl-3">• Vowels and common consonants (R, S, T, L, N, D) are highly valued</p>
-            <p className="mb-2 pl-3">• Using unique letters (no duplicates) earns bonus points</p>
-            
-            <p className="mb-1"><span className="font-bold text-yellow-400">Mid Game (Guesses 3-4):</span></p>
-            <p className="mb-2 pl-3">• Using information from previous guesses is important</p>
-            <p className="mb-2 pl-3">• Green letters should be placed in correct positions</p>
-            <p className="mb-2 pl-3">• Yellow letters should be used in new positions</p>
-            
-            <p className="mb-1"><span className="font-bold text-orange-400">Late Game (Guesses 5+):</span></p>
-            <p className="mb-2 pl-3">• Maximizing use of all known information is critical</p>
-            <p className="mb-2 pl-3">• Reusing letters marked as incorrect will lower your score</p>
-            
-            <p className="mt-2">Ratings range from <span className="text-green-400">GREEN</span> (excellent) to <span className="text-yellow-400">YELLOW</span> (good) to <span className="text-orange-400">ORANGE</span> (decent) to <span className="text-red-400">RED</span> (poor)</p>
-            </div>
-        </div>
-        )}
-
       </div>
       
       {/* Difficulty selection */}
