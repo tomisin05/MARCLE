@@ -144,11 +144,6 @@ export default observer(function Home() {
         <DifficultySelector onDifficultySet={handleDifficultyChange} />
       ) : (
         <div className="game-background flex min-h-screen w-full flex-col items-center justify-between overflow-y-auto mobile-friendly-container space-y-4 px-2 sm:px-4 relative">
-          {/* Language selector in the top-right corner */}
-          <div className="absolute top-4 right-4 z-10">
-            <LanguageSelector />
-          </div>
-          
           {/* Tutorial modal */}
           {showTutorial && <Tutorial onClose={() => setShowTutorial(false)} />}
           
