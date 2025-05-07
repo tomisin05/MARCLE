@@ -206,7 +206,7 @@ const Tutorial = observer(({ onClose }: TutorialProps) => {
               />
             </div>
             <div className="flex items-center">
-              <LanguageSelector className="mr-4" />
+              <LanguageSelector className="mr-16" />
               <button 
                 onClick={onClose}
                 className="text-gray-400 hover:text-white"
