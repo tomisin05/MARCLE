@@ -1,7 +1,7 @@
 // components/DifficultySelector.tsx
 import { useState } from 'react';
 import PuzzleStore from '../stores/PuzzleStore';
-
+import Tutorial from './Tutorial';
 export interface DifficultyProps {
   onDifficultySet: () => void;
 }
@@ -10,6 +10,8 @@ export default function DifficultySelector({ onDifficultySet }: DifficultyProps)
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('default');
   const [isHovering, setIsHovering] = useState<string | null>(null);
   const [showInfo, setShowInfo] = useState(false);
+  const [showTutorial, setShowTutorial] = useState(false); 
+
 
   const difficulties = [
     { 
@@ -72,6 +74,9 @@ export default function DifficultySelector({ onDifficultySet }: DifficultyProps)
 
   return (
     <div className="game-background min-h-screen flex flex-col items-center justify-center p-4 relative">
+              {/* Tutorial modal */}
+      {showTutorial && <Tutorial onClose={() => setShowTutorial(false)} />}
+      
       {/* Animated background elements */}
       {stars.map(star => (
         <div
@@ -186,13 +191,23 @@ export default function DifficultySelector({ onDifficultySet }: DifficultyProps)
         ))}
       </div>
       
-      {/* Start game button */}
-      <button
-        onClick={handleStartGame}
-        className="px-8 py-4 bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-lg font-bold rounded-full hover:from-indigo-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
-      >
-        Start Game
-      </button>
+      
+      {/* Start game button and Tutorial button */}
+      <div className="flex flex-wrap justify-center gap-4">
+        <button
+          onClick={handleStartGame}
+          className="px-8 py-4 bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-lg font-bold rounded-full hover:from-indigo-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
+        >
+          Start Game
+        </button>
+        
+        <button
+          onClick={() => setShowTutorial(true)}
+          className="px-8 py-4 bg-gradient-to-r from-green-500 to-teal-600 text-white text-lg font-bold rounded-full hover:from-green-600 hover:to-teal-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
+        >
+          How to Play
+        </button>
+      </div>
     </div>
   );
 }

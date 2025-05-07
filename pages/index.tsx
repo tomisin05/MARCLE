@@ -5,6 +5,7 @@ import Guess, { GameGrid } from '../components/Guess'
 import Querty from '../components/Qwerty'
 import PuzzleStore, { Difficulty } from '../stores/PuzzleStore'
 import DifficultySelector from '../components/DifficultySelector'
+import Tutorial from '../components/Tutorial'; 
 import { toJS } from 'mobx'
 import dynamic from 'next/dynamic'
 
@@ -15,6 +16,7 @@ export default observer(function Home() {
   const [gameStarted, setGameStarted] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
   const [confettiRecycle, setConfettiRecycle] = useState(true);
+  const [showTutorial, setShowTutorial] = useState(false); 
   const [theme, setTheme] = useState<'default' | 'dark' | 'fun'>('fun');
   const confettiRef = useRef<HTMLDivElement>(null);
   const store = PuzzleStore;
@@ -141,6 +143,9 @@ export default observer(function Home() {
         <DifficultySelector onDifficultySet={handleDifficultyChange} />
       ) : (
         <div className="game-background flex min-h-screen w-full flex-col items-center justify-between overflow-y-auto mobile-friendly-container space-y-4 px-2 sm:px-4 relative">
+            {/* Tutorial modal */}
+          {showTutorial && <Tutorial onClose={() => setShowTutorial(false)} />}
+          
           {/* Animated background elements */}
           {stars.map(star => (
             <div
@@ -174,12 +179,21 @@ export default observer(function Home() {
                 Max Guesses: {store.maxGuesses}
               </span>
             </p>
+            <div className="flex flex-wrap justify-center gap-2 mt-4">
             <button 
               onClick={changeDifficulty} 
               className="mt-4 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold py-2 px-6 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg"
             >
               Change Difficulty
             </button>
+             {/* Tutorial button */}
+             <button 
+                onClick={() => setShowTutorial(true)} 
+                className="mt-4 bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 text-white font-bold py-2 px-6 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg"
+              >
+                How to Play
+              </button>
+            </div>
           </div>
 
           {/* Game grid */}
