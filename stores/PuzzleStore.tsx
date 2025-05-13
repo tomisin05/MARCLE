@@ -235,6 +235,7 @@ class PuzzleStore {
   scores: (number | undefined)[] = [];
   guessRatings: (string | undefined)[] = [];
   guessScores: (number | undefined)[] = [];
+  invalidGuess: boolean = false; // Track if the current guess is invalid
 
   // Update these when a guess is made
   addGuessResult(rating: string, score: number) {
@@ -448,11 +449,13 @@ class PuzzleStore {
     this.guesses.replace(newGuesses);
     console.log('Store initialized with guesses:', this.guesses.slice());
     this.currentGuess = 0
-    this.lastGuessColors = ['bg-black', 'bg-black', 'bg-black', 'bg-black', 'bg-black', 'bg-black']
+    // Initialize with gray colors
+    this.lastGuessColors = ['bg-gray-400', 'bg-gray-400', 'bg-gray-400', 'bg-gray-400', 'bg-gray-400', 'bg-gray-400']
     this.ratings = new Array(this.maxGuesses).fill(undefined)
     this.scores = new Array(this.maxGuesses).fill(undefined)
     this.guessRatings = new Array(this.maxGuesses).fill(undefined)
     this.guessScores = new Array(this.maxGuesses).fill(undefined)
+    this.invalidGuess = false
     console.log('PuzzleStore initialized:', { word: this.word, currentGuess: this.currentGuess, guesses: this.guesses.slice() })
   }
 
@@ -570,18 +573,45 @@ class PuzzleStore {
       this.guesses.splice(this.currentGuess, 1, '');
     }
 
-    if (e.key === 'Enter' && toJS(this.guesses)[this.currentGuess].length === 6) {
-      await this.submitGuess()
-      return
+    if (e.key === 'Enter') {
+      // Reset invalid guess state
+      this.invalidGuess = false;
+      
+      // Check if the guess is complete (6 letters)
+      if (toJS(this.guesses)[this.currentGuess].length === 6) {
+        // Check if the word is in the wordlist
+        if (!words.includes(toJS(this.guesses)[this.currentGuess])) {
+          // Set invalid guess flag if word is not in wordlist
+          this.invalidGuess = true;
+          console.log('Word not in wordlist:', toJS(this.guesses)[this.currentGuess]);
+          
+          // Reset the invalid guess flag after 2 seconds
+          setTimeout(() => {
+            this.invalidGuess = false;
+          }, 2000);
+          
+          return;
+        }
+        
+        // Change the circle color to yellow when user submits a valid guess
+        this.lastGuessColors = ['bg-yellow-400', 'bg-yellow-400', 'bg-yellow-400', 'bg-yellow-400', 'bg-yellow-400', 'bg-yellow-400'];
+        
+        await this.submitGuess();
+      }
+      return;
     }
 
     if (e.key === 'Backspace') {
+      // Reset invalid guess state when editing
+      this.invalidGuess = false;
       const currentGuess = toJS(this.guesses)[this.currentGuess];
       this.guesses.splice(this.currentGuess, 1, currentGuess.slice(0, -1));
       return
     }
 
     if (e.key.match(/^[A-Za-z]$/)) {
+      // Reset invalid guess state when editing
+      this.invalidGuess = false;
       const currentGuess = toJS(this.guesses)[this.currentGuess];
       if (currentGuess.length < 6) {
         this.guesses.splice(this.currentGuess, 1, currentGuess + e.key.toLowerCase());
@@ -600,12 +630,36 @@ class PuzzleStore {
       this.guesses.splice(this.currentGuess, 1, '');
     }
 
-    if (input === 'Enter' && toJS(this.guesses)[this.currentGuess].length === 6) {
-      this.submitGuess()
-      return
+    if (input === 'Enter') {
+      // Reset invalid guess state
+      this.invalidGuess = false;
+      
+      // Check if the guess is complete (6 letters)
+      if (toJS(this.guesses)[this.currentGuess].length === 6) {
+        // Check if the word is in the wordlist
+        if (!words.includes(toJS(this.guesses)[this.currentGuess])) {
+          // Set invalid guess flag if word is not in wordlist
+          this.invalidGuess = true;
+          
+          // Reset the invalid guess flag after 2 seconds
+          setTimeout(() => {
+            this.invalidGuess = false;
+          }, 2000);
+          
+          return;
+        }
+        
+        // Change the circle color to yellow when user submits a valid guess
+        this.lastGuessColors = ['bg-yellow-400', 'bg-yellow-400', 'bg-yellow-400', 'bg-yellow-400', 'bg-yellow-400', 'bg-yellow-400'];
+        
+        this.submitGuess();
+      }
+      return;
     }
 
     if (input === 'Backspace') {
+      // Reset invalid guess state when editing
+      this.invalidGuess = false;
       const currentGuess = toJS(this.guesses)[this.currentGuess];
       const newGuess = currentGuess.slice(0, -1);
       this.guesses.splice(this.currentGuess, 1, newGuess);
@@ -614,6 +668,8 @@ class PuzzleStore {
 
     // Handle letter input
     if (input.match(/^[A-Za-z]$/)) {
+      // Reset invalid guess state when editing
+      this.invalidGuess = false;
       const currentGuess = toJS(this.guesses)[this.currentGuess] || '';
       if (currentGuess.length < 6) {
         const newGuess = currentGuess + input.toLowerCase();

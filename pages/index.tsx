@@ -19,6 +19,7 @@ export default observer(function Home() {
   const [confettiRecycle, setConfettiRecycle] = useState(true);
   const [showTutorial, setShowTutorial] = useState(false); 
   const [theme, setTheme] = useState<'default' | 'dark' | 'fun'>('fun');
+  const [showInvalidAlert, setShowInvalidAlert] = useState(false);
   const confettiRef = useRef<HTMLDivElement>(null);
   const store = PuzzleStore;
   
@@ -97,6 +98,22 @@ export default observer(function Home() {
       }, 7000);
     }
   }, [store.won]);
+  
+  // Watch for invalid guesses
+  useEffect(() => {
+    if (store.invalidGuess) {
+      setShowInvalidAlert(true);
+      
+      // Hide the alert after 2 seconds
+      const timer = setTimeout(() => {
+        setShowInvalidAlert(false);
+      }, 2000);
+      
+      return () => clearTimeout(timer);
+    } else {
+      setShowInvalidAlert(false);
+    }
+  }, [store.invalidGuess]);
 
   const startGame = (difficulty: Difficulty) => {
     store.setDifficulty(difficulty);
@@ -197,6 +214,13 @@ export default observer(function Home() {
             </div>
           </div>
 
+          {/* Invalid word alert */}
+          {showInvalidAlert && (
+            <div className="mb-4 p-3 bg-red-500 text-white rounded-md animate-bounce text-center w-full max-w-xs sm:max-w-sm md:max-w-md">
+              Word not in wordlist!
+            </div>
+          )}
+          
           {/* Game grid */}
           <div className={`mb-4 w-full max-w-xs sm:max-w-sm md:max-w-md backdrop-blur-sm bg-black/20 p-4 rounded-lg ${store.lost || store.won ? 'game-over' : ''}`}>
             <GameGrid
